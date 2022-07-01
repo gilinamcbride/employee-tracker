@@ -2,12 +2,13 @@ const inquirer = require("inquirer");
 const db = require("./db/connection");
 const cTable = require("console.table");
 
-const viewAllEmployees = () => {
-  const sql = `SELECT employees.first_name, employees.last_name,
-  roles.title AS role,
+const viewAllEmployees = (callback) => {
+  const sql = `SELECT employees.id, employees.first_name, employees.last_name,
+  roles.title AS role, roles.salary AS salary, departments.name AS department,
   CONCAT(e2.first_name, ' ', e2.last_name) AS manager
   FROM employees
   LEFT JOIN roles ON employees.role_id = roles.id
+  LEFT JOIN departments ON roles.department_id = departments.id
   LEFT JOIN employees e2 ON employees.manager_id = e2.id;
   `;
   db.query(sql, (err, rows) => {
@@ -15,6 +16,7 @@ const viewAllEmployees = () => {
       return;
     }
     console.table(rows);
+    callback;
   });
 };
 const viewAllRoles = () => {
@@ -231,7 +233,7 @@ const selectByManagerQuestions = (managerList) => {
   return {
     type: "list",
     name: "managerList",
-    message: "Which manager's employees would you like to see?",
+    message: "Which manager's employees would you like to view?",
     choices: managerList,
   };
 };
@@ -246,8 +248,7 @@ const selectByManager = () => {
       const choices = selectByManagerQuestions(managerList);
       inquirer.prompt(choices).then(({ managerList }) => {
         const sql = `SELECT CONCAT(first_name, ' ', last_name) as name from employees where manager_id = ?;`;
-        const params = [managerList];
-        db.query(sql, params, (err, rows) => {
+        db.query(sql, managerList, (err, rows) => {
           if (err) {
             return;
           }
@@ -256,6 +257,144 @@ const selectByManager = () => {
       });
     }
   );
+};
+
+const selectByDepartmentQuestions = (departmentList) => {
+  return {
+    type: "list",
+    name: "departmentList",
+    message: "Which department's employees would you like to view?",
+    choices: departmentList,
+  };
+};
+
+const selectByDepartment = () => {
+  db.query(`SELECT id, name FROM departments`, (err, rows) => {
+    const departmentList = rows.map((row) => {
+      return { value: row.id, name: row.name };
+    });
+    const choices = selectByDepartmentQuestions(departmentList);
+    inquirer.prompt(choices).then(({ departmentList }) => {
+      const sql = `SELECT CONCAT(employees.first_name, ' ', employees.last_name) AS name FROM employees left join roles ON employees.role_id = roles.id WHERE roles.department_id = ?;`;
+      db.query(sql, departmentList, (err, rows) => {
+        if (err) {
+          return;
+        }
+        console.table(rows);
+      });
+    });
+  });
+};
+
+const deleteEmployeeQuestions = (employeeList) => {
+  return {
+    type: "list",
+    name: "employeeList",
+    message: "Which employee would you like to delete?",
+    choices: employeeList,
+  };
+};
+
+const deleteEmployee = () => {
+  db.query(
+    `SELECT id, CONCAT(first_name, ' ', last_name) AS name FROM employees;`,
+    (err, rows) => {
+      const employeeList = rows.map((row) => {
+        return { value: row.id, name: row.name };
+      });
+      const choices = deleteEmployeeQuestions(employeeList);
+      inquirer.prompt(choices).then(({ employeeList }) => {
+        const sql = `DELETE FROM employees WHERE id = ?;`;
+        db.query(sql, employeeList, (err, rows) => {
+          if (err) {
+            return;
+          }
+          console.log("Employee has been deleted.");
+        });
+      });
+    }
+  );
+};
+
+const deleteRoleQuestions = (roleList) => {
+  return {
+    type: "list",
+    name: "roleList",
+    message: "Which role would you like to delete?",
+    choices: roleList,
+  };
+};
+
+const deleteRole = () => {
+  db.query(`SELECT id, title FROM roles;`, (err, rows) => {
+    const roleList = rows.map((row) => {
+      return { value: row.id, name: row.title };
+    });
+    const choices = deleteRoleQuestions(roleList);
+    inquirer.prompt(choices).then(({ roleList }) => {
+      const sql = `DELETE FROM roles WHERE id = ?;`;
+      db.query(sql, roleList, (err, rows) => {
+        if (err) {
+          return;
+        }
+        console.log("Role has been deleted.");
+      });
+    });
+  });
+};
+
+const deleteDepartmentQuestions = (departmentList) => {
+  return {
+    type: "list",
+    name: "departmentList",
+    message: "Which department would you like to delete?",
+    choices: departmentList,
+  };
+};
+
+const deleteDepartment = () => {
+  db.query(`SELECT id, name FROM departments;`, (err, rows) => {
+    const departmentList = rows.map((row) => {
+      return { value: row.id, name: row.name };
+    });
+    const choices = deleteDepartmentQuestions(departmentList);
+    inquirer.prompt(choices).then(({ departmentList }) => {
+      const sql = `DELETE FROM departments WHERE id = ?;`;
+      db.query(sql, departmentList, (err, rows) => {
+        if (err) {
+          return;
+        }
+        console.log("Department has been deleted.");
+      });
+    });
+  });
+};
+
+const departmentSalaryQuestions = (departmentList) => {
+  return {
+    type: "list",
+    name: "departmentList",
+    message: "Which department would you like to view the total budget?",
+    choices: departmentList,
+  };
+};
+
+const departmentSalaries = () => {
+  db.query(`SELECT id, name FROM departments;`, (err, rows) => {
+    const departmentList = rows.map((row) => {
+      return { value: row.id, name: row.name };
+    });
+    const choices = departmentSalaryQuestions(departmentList);
+    inquirer.prompt(choices).then(({ departmentList }) => {
+      const sql = `SELECT sum(roles.salary) as total FROM roles WHERE roles.department_id = ?;`;
+      db.query(sql, departmentList, (err, rows) => {
+        if (err) {
+          return;
+        }
+        console.table(rows);
+      });
+    });
+  });
 };
 
 module.exports = {
@@ -267,4 +406,9 @@ module.exports = {
   addDepartment,
   updateEmployeeRole,
   selectByManager,
+  deleteEmployee,
+  deleteRole,
+  deleteDepartment,
+  selectByDepartment,
+  departmentSalaries,
 };

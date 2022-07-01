@@ -9,6 +9,11 @@ const {
   addDepartment,
   updateEmployeeRole,
   selectByManager,
+  deleteEmployee,
+  deleteRole,
+  deleteDepartment,
+  selectByDepartment,
+  departmentSalaries,
 } = require("./helper.js");
 
 const startInquirer = () => {
@@ -25,19 +30,22 @@ const startInquirer = () => {
         "Update Employee Role",
         "Add Role",
         "Add Department",
-        "Select Employees By Manager",
+        "View Employees By Manager",
+        "View Employees By Department",
+        "View Total Budget By Department",
+        "Delete Employee",
+        "Delete Role",
+        "Delete Department",
         "Quit",
       ],
     })
-    .then(async (answers) => {
+    .then((answers) => {
       switch (answers.firstQuestion) {
         case "View All Employees":
-          viewAllEmployees();
-          await startInquirer();
+          viewAllEmployees(startInquirer());
           break;
         case "View All Roles":
           viewAllRoles();
-          await startInquirer();
           break;
         case "View All Departments":
           viewAllDepartments();
@@ -54,8 +62,23 @@ const startInquirer = () => {
         case "Add Department":
           addDepartment();
           break;
-        case "Select Employees By Manager":
+        case "View Employees By Manager":
           selectByManager();
+          break;
+        case "View Employees By Department":
+          selectByDepartment();
+          break;
+        case "View Total Budget By Department":
+          departmentSalaries();
+          break;
+        case "Delete Employee":
+          deleteEmployee();
+          break;
+        case "Delete Role":
+          deleteRole();
+          break;
+        case "Delete Department":
+          deleteDepartment();
           break;
         case "Quit":
           process.exit();

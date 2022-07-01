@@ -7,7 +7,7 @@ const db = mysql.createConnection(
     password: "",
     database: "company",
   },
-  console.log("Connected to the company database.")
+  console.log("Welcome to Employee Manager!")
 );
 
 module.exports = db;
