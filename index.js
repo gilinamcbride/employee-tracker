@@ -1,6 +1,5 @@
 const inquirer = require("inquirer");
 const db = require("./db/connection");
-const cTable = require("console.table");
 const {
   viewAllDepartments,
   viewAllRoles,
@@ -8,6 +7,8 @@ const {
   addEmployee,
   addRole,
   addDepartment,
+  updateEmployeeRole,
+  selectByManager,
 } = require("./helper.js");
 
 const startInquirer = () => {
@@ -24,16 +25,19 @@ const startInquirer = () => {
         "Update Employee Role",
         "Add Role",
         "Add Department",
+        "Select Employees By Manager",
         "Quit",
       ],
     })
-    .then((answers) => {
+    .then(async (answers) => {
       switch (answers.firstQuestion) {
         case "View All Employees":
           viewAllEmployees();
+          await startInquirer();
           break;
         case "View All Roles":
           viewAllRoles();
+          await startInquirer();
           break;
         case "View All Departments":
           viewAllDepartments();
@@ -42,6 +46,7 @@ const startInquirer = () => {
           addEmployee();
           break;
         case "Update Employee Role":
+          updateEmployeeRole();
           break;
         case "Add Role":
           addRole();
@@ -49,19 +54,21 @@ const startInquirer = () => {
         case "Add Department":
           addDepartment();
           break;
-        case "Quit":
+        case "Select Employees By Manager":
+          selectByManager();
           break;
+        case "Quit":
+          process.exit();
         default:
           console.log("Please choose an option.");
       }
-    })
-    .catch((err) => console.log("Please choose an option."));
+    });
+  // .catch((err) => console.log("Please choose an option."));
 };
-
-startInquirer();
 
 // database error connect
 db.connect((err) => {
   if (err) throw err;
-  console.log("Database connected.");
 });
+
+startInquirer();
