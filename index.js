@@ -20,7 +20,7 @@ const viewAllEmployees = () => {
   });
 };
 const viewAllRoles = () => {
-  const sql = `SELECT roles.title, roles.salary, departments.name
+  const sql = `SELECT roles.id, roles.title, roles.salary, departments.name
   AS department FROM roles
   LEFT JOIN departments
   ON roles.department_id = departments.id;`;
@@ -34,7 +34,7 @@ const viewAllRoles = () => {
 };
 
 const viewAllDepartments = () => {
-  const sql = `SELECT departments.name FROM departments`;
+  const sql = `SELECT departments.id, departments.name FROM departments`;
   db.query(sql, (err, rows) => {
     if (err) {
       return;
@@ -126,7 +126,7 @@ const updateRoleQuestions = (employeeList, roleList, managerList) => {
   ];
 };
 
-const updateEmployeeRole = () => {
+const updateEmployee = () => {
   db.query(
     `SELECT id, CONCAT(first_name, ' ', last_name) AS name FROM employees WHERE employees.manager_id IS NOT NULL;`,
     (err, rows) => {
@@ -420,7 +420,7 @@ const startInquirer = () => {
         "View All Roles",
         "View All Departments",
         "Add Employee",
-        "Update Employee Role",
+        "Update Employee",
         "Add Role",
         "Add Department",
         "View Employees By Manager",
@@ -446,8 +446,8 @@ const startInquirer = () => {
         case "Add Employee":
           addEmployee();
           break;
-        case "Update Employee Role":
-          updateEmployeeRole();
+        case "Update Employee":
+          updateEmployee();
           break;
         case "Add Role":
           addRole();

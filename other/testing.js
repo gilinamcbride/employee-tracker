@@ -7,14 +7,14 @@
 //   addEmployee,
 //   addRole,
 //   addDepartment,
-//   updateEmployeeRole,
+//   updateEmployee,
 //   selectByManager,
 //   deleteEmployee,
 //   deleteRole,
 //   deleteDepartment,
 //   selectByDepartment,
 //   departmentSalaries,
-// } = require("./helper.js");
+// } = require("./index.js");
 
 // const startInquirer = () => {
 //   return inquirer
@@ -42,7 +42,7 @@
 //     .then((answers) => {
 //       switch (answers.firstQuestion) {
 //         case "View All Employees":
-//           viewAllEmployees();
+//           viewAllEmployees(startInquirer());
 //           break;
 //         case "View All Roles":
 //           viewAllRoles();
@@ -54,7 +54,7 @@
 //           addEmployee();
 //           break;
 //         case "Update Employee Role":
-//           updateEmployeeRole();
+//           updateEmployee();
 //           break;
 //         case "Add Role":
 //           addRole();
@@ -103,7 +103,7 @@
 //   addEmployee,
 //   addRole,
 //   addDepartment,
-//   updateEmployeeRole,
+//   updateEmployee,
 //   selectByManager,
 //   deleteEmployee,
 //   deleteRole,
