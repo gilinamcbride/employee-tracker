@@ -52,6 +52,10 @@ This application is a a command-line application that manages a company's employ
 
 ## Application
 
+Screenshot of Inquirer Walkthrough
+
+![screenshot](./other/screenshot.png)
+
 [Link to video walkthrough](https://drive.google.com/file/d/1J8ZWoZt36eGG5OaIuMtbzN5ZB3FUsgRi/view?usp=sharing)
 
 ## Questions?
